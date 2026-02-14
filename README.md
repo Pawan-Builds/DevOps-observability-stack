@@ -593,34 +593,6 @@ The database is pre-loaded with:
 
 ---
 
-## 🚀 Future Enhancements
-
-### Planned Features
-- [ ] Kubernetes deployment manifests
-- [ ] Helm charts for easy deployment
-- [ ] CI/CD pipeline with GitHub Actions
-- [ ] Integration tests with pytest
-- [ ] API authentication (JWT)
-- [ ] Rate limiting
-- [ ] Distributed tracing with Jaeger
-- [ ] Message queue (RabbitMQ/Kafka)
-- [ ] Caching layer (Redis)
-- [ ] GraphQL API
-- [ ] gRPC inter-service communication
-- [ ] Service mesh (Istio)
-
-### DevOps Improvements
-- [ ] ArgoCD for GitOps
-- [ ] HashiCorp Vault for secrets
-- [ ] Terraform for infrastructure
-- [ ] Automated backup strategy
-- [ ] Disaster recovery plan
-- [ ] Blue-green deployment
-- [ ] Canary releases
-- [ ] Chaos engineering tests
-
----
-
 ## 🎓 Learning Outcomes
 
 This project demonstrates:
@@ -653,7 +625,6 @@ This project demonstrates:
 - GitHub: [@Pawan-Builds](https://github.com/Pawan-Builds)
 - LinkedIn: [pawan-singh-m](https://www.linkedin.com/in/pawan-singh-m/)
 - Email: pawanm2307@gmail.com
-- Portfolio: [Your Portfolio URL]
 
 ---
 

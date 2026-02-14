@@ -86,7 +86,6 @@ graph TB
 ```
 
 <div align="center">
-<img src="docs/architecture.png" alt="Architecture Diagram" width="800"/>
 <p><i>Complete System Architecture with Observability Stack</i></p>
 </div>
 
@@ -223,14 +222,18 @@ make clean       # Stop and remove all containers
 ### Grafana Dashboard Preview
 
 <div align="center">
-<img src="docs/grafana.png" alt="Grafana Dashboard" width="800"/>
+<img width="1885" height="655" alt="Screenshot 2026-02-14 222901" src="https://github.com/user-attachments/assets/1ecdf490-7db2-4227-b890-3ea7764d8b9b" />
+<img width="1859" height="454" alt="Screenshot 2026-02-14 222916" src="https://github.com/user-attachments/assets/5c2d7cab-5e56-46ee-b761-f206ac98b8fb" />
+
 <p><i>Real-time metrics dashboard showing service health and performance</i></p>
 </div>
 
 ### Prometheus Targets
 
 <div align="center">
-<img src="docs/prometheus.png" alt="Prometheus Targets" width="800"/>
+<img width="1889" height="931" alt="Screenshot 2026-02-14 222956" src="https://github.com/user-attachments/assets/7db1c23b-9e7a-4f9d-a6d9-a2af72926524" />
+<img width="1886" height="957" alt="Screenshot 2026-02-14 222822" src="https://github.com/user-attachments/assets/e58f98e9-c346-49f0-bd1f-7052ae217fab" />
+
 <p><i>Prometheus target status showing all services are UP</i></p>
 </div>
 

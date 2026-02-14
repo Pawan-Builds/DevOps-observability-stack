@@ -122,8 +122,8 @@ Monitoring & Logging:
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/Pawan-Builds/devops-observability-stack
-cd devops-observability-stack
+git clone https://github.com/Pawan-Builds/DevOps-observability-stack.git
+cd DevOps-observability-stack
 ```
 
 2. **Start all services:**
@@ -636,9 +636,13 @@ This project demonstrates:
 
 ---
 
-## 📝 License
-
-MIT License - feel free to use this project for learning and portfolio purposes.
+## 📝 Output
+**Grafana**
+<img width="1885" height="655" alt="Screenshot 2026-02-14 222901" src="https://github.com/user-attachments/assets/b1cba8ca-0fb2-4a10-9ebb-e0898e80f778" />
+<img width="1859" height="454" alt="Screenshot 2026-02-14 222916" src="https://github.com/user-attachments/assets/577e26a7-7c3d-415b-8889-af002de7c2e1" />
+**Prometheus**
+<img width="1889" height="931" alt="Screenshot 2026-02-14 222956" src="https://github.com/user-attachments/assets/8707aa96-fc8c-4778-a1e8-b506018bc978" />
+<img width="1886" height="957" alt="Screenshot 2026-02-14 222822" src="https://github.com/user-attachments/assets/3c082b51-3f44-4a8a-84bc-2b487284dc3c" />
 
 ---
 

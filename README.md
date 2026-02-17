@@ -144,6 +144,7 @@ graph TB
 
 <img width="1919" height="561" alt="Screenshot 2026-02-17 211250" src="https://github.com/user-attachments/assets/d57036f8-d345-4cc1-b857-2b64c10f4e45" />
 
+*9 pods running across 4 deployments | HPA autoscaling: cpu: 1%/70%, memory: 10%/80%*
 
 ---
 
@@ -152,6 +153,8 @@ graph TB
 <img width="1885" height="655" alt="Screenshot 2026-02-14 222901" src="https://github.com/user-attachments/assets/3ba7d026-dab6-4133-839c-2d36b33cbb16" />
 <img width="1859" height="454" alt="Screenshot 2026-02-14 222916" src="https://github.com/user-attachments/assets/45ceca74-0442-43fd-be52-e7b152739693" />
 
+*Live request rate spike during load testing + service health status (all green)*
+
 ---
 
 ### 🔍 3. Prometheus - All Targets UP
@@ -159,22 +162,26 @@ graph TB
 <img width="1886" height="957" alt="Screenshot 2026-02-14 222822" src="https://github.com/user-attachments/assets/8403b572-3966-4ecc-b771-b9b4521a73f3" />
 <img width="1889" height="931" alt="Screenshot 2026-02-14 222956" src="https://github.com/user-attachments/assets/e041de14-8def-4891-a416-4e8e6b909c8f" />
 
+*All 4 targets healthy - order-service, product-service, user-service and prometheus*
+
 ---
 
 ### 🔌 4. Live API Responses
 
 <img width="1919" height="338" alt="Screenshot 2026-02-17 211406" src="https://github.com/user-attachments/assets/fad1774d-38bf-4969-a7ca-43af44dd3410" />
 
+*All 3 microservices returning live data from PostgreSQL*
 
-<!-- ============================================
+---
 
+### 🐳 5. Docker Hub - Published Images
 
-> Test APIs:
-> ```bash
-> curl http://localhost:5000/products
-> curl http://localhost:5001/orders
-> curl http://localhost:5002/users
-> ```
+*Screenshot coming soon - visit [hub.docker.com/u/pawanm2307](https://hub.docker.com/u/pawanm2307)*
+
+Published images:
+- `pawanm2307/product-service:v1.0.0`
+- `pawanm2307/order-service:v1.0.0`
+- `pawanm2307/user-service:v1.0.0`
 
 ---
 
@@ -374,13 +381,7 @@ devops-observability-stack/
 │   ├── 📁 secrets/
 │   ├── 📁 deployments/
 │   └── 📁 hpa/
-├── 📁 scripts/
-└── 📁 screenshots/
-    ├── k8s-pods.png           ← kubectl get pods + hpa
-    ├── grafana-dashboard.png  ← Grafana monitoring
-    ├── prometheus-targets.png ← All targets UP
-    ├── api-responses.png      ← curl API outputs
-    └── dockerhub.png          ← Docker Hub images
+└── 📁 scripts/
 ```
 
 ---
@@ -405,7 +406,6 @@ kubectl patch deployment product-service -n ecommerce \
 
 ```bash
 pkill -f "kubectl port-forward"
-# Docker Compose already serves 5000-5002, no port-forward needed
 ```
 </details>
 

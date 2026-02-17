@@ -5,6 +5,9 @@
 
 set -e
 
+# Go to script directory (works regardless of folder name)
+cd "$(dirname "$0")"
+
 echo "🚀 Starting Complete DevOps Observability Stack"
 echo "================================================"
 
@@ -13,9 +16,9 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-print_status() { echo -e "${GREEN}✅ $1${NC}"; }
+print_status()  { echo -e "${GREEN}✅ $1${NC}"; }
 print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
-print_error() { echo -e "${RED}❌ $1${NC}"; }
+print_error()   { echo -e "${RED}❌ $1${NC}"; }
 
 # ─────────────────────────────────────────
 # STEP 1: Start Minikube
@@ -35,7 +38,6 @@ fi
 # ─────────────────────────────────────────
 echo ""
 echo "📋 Step 2: Starting Docker Compose Stack..."
-cd ~/DevOps-observability-stack
 docker compose up -d
 print_status "Docker Compose stack started!"
 
@@ -43,14 +45,31 @@ echo "⏳ Waiting for Docker services to be healthy..."
 sleep 15
 
 # ─────────────────────────────────────────
-# STEP 3: Apply Kubernetes Manifests
+# STEP 3: Auto-create Secrets (no file needed)
 # ─────────────────────────────────────────
 echo ""
-echo "📋 Step 3: Applying Kubernetes manifests..."
+echo "📋 Step 3: Creating Kubernetes secrets..."
+
+# Create secrets directly with kubectl (no yaml file needed!)
+kubectl create namespace ecommerce 2>/dev/null || true
+
+kubectl create secret generic app-secrets \
+  --namespace=ecommerce \
+  --from-literal=DB_USER=admin \
+  --from-literal=DB_PASSWORD=password \
+  --from-literal=SECRET_KEY=secretkey \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+print_status "Secrets created!"
+
+# ─────────────────────────────────────────
+# STEP 4: Apply Kubernetes Manifests
+# ─────────────────────────────────────────
+echo ""
+echo "📋 Step 4: Applying Kubernetes manifests..."
 
 kubectl apply -f k8s/namespace/namespace.yaml
 kubectl apply -f k8s/configmap/configmap.yaml
-kubectl apply -f k8s/secrets/secrets.yaml
 kubectl apply -f k8s/deployments/postgres.yaml
 kubectl apply -f k8s/deployments/product-service.yaml
 kubectl apply -f k8s/deployments/order-service.yaml
@@ -59,10 +78,27 @@ kubectl apply -f k8s/hpa/hpa.yaml
 print_status "Kubernetes manifests applied!"
 
 # ─────────────────────────────────────────
-# STEP 4: Set Correct Images (docker.io prefix)
+# STEP 5: Load Images into Minikube
 # ─────────────────────────────────────────
 echo ""
-echo "📋 Step 4: Setting correct image names..."
+echo "📋 Step 5: Loading images into Minikube..."
+
+# Check if images exist in minikube already
+if ! minikube image ls | grep -q "pawanm2307/product-service"; then
+    echo "Loading images into minikube (first time only - takes 2-3 mins)..."
+    minikube image load docker.io/pawanm2307/product-service:v1.0.0
+    minikube image load docker.io/pawanm2307/order-service:v1.0.0
+    minikube image load docker.io/pawanm2307/user-service:v1.0.0
+    print_status "Images loaded into Minikube!"
+else
+    print_status "Images already in Minikube - skipping!"
+fi
+
+# ─────────────────────────────────────────
+# STEP 6: Set Correct Images + Pull Policy
+# ─────────────────────────────────────────
+echo ""
+echo "📋 Step 6: Configuring deployments..."
 
 kubectl set image deployment/product-service \
   product-service=docker.io/pawanm2307/product-service:v1.0.0 \
@@ -76,14 +112,6 @@ kubectl set image deployment/user-service \
   user-service=docker.io/pawanm2307/user-service:v1.0.0 \
   -n ecommerce 2>/dev/null || true
 
-print_status "Image names updated!"
-
-# ─────────────────────────────────────────
-# STEP 5: Set imagePullPolicy to Never
-# ─────────────────────────────────────────
-echo ""
-echo "📋 Step 5: Configuring image pull policy..."
-
 kubectl patch deployment product-service -n ecommerce \
   -p '{"spec":{"template":{"spec":{"containers":[{"name":"product-service","imagePullPolicy":"Never"}]}}}}' \
   2>/dev/null || true
@@ -96,42 +124,24 @@ kubectl patch deployment user-service -n ecommerce \
   -p '{"spec":{"template":{"spec":{"containers":[{"name":"user-service","imagePullPolicy":"Never"}]}}}}' \
   2>/dev/null || true
 
-print_status "Image pull policy set to Never (uses local minikube images)!"
+print_status "Deployments configured!"
 
 # ─────────────────────────────────────────
-# STEP 6: Wait for Pods to be Ready
+# STEP 7: Wait for Pods to be Ready
 # ─────────────────────────────────────────
 echo ""
 echo "⏳ Waiting for Kubernetes pods to be ready..."
 
 kubectl wait --for=condition=available --timeout=120s \
   deployment/postgres -n ecommerce 2>/dev/null || true
-
 kubectl wait --for=condition=available --timeout=120s \
   deployment/product-service -n ecommerce 2>/dev/null || true
-
 kubectl wait --for=condition=available --timeout=120s \
   deployment/order-service -n ecommerce 2>/dev/null || true
-
 kubectl wait --for=condition=available --timeout=120s \
   deployment/user-service -n ecommerce 2>/dev/null || true
 
 print_status "All Kubernetes pods ready!"
-
-# ─────────────────────────────────────────
-# STEP 7: Port Forwarding (skip if ports in use)
-# ─────────────────────────────────────────
-echo ""
-echo "📋 Step 7: Setting up port forwarding..."
-
-# Kill any existing port-forwards first
-pkill -f "kubectl port-forward" 2>/dev/null || true
-sleep 2
-
-# Docker Compose already uses 5000-5002
-# So we skip port-forward (Docker Compose services serve those ports)
-print_status "Docker Compose already serving on ports 5000, 5001, 5002!"
-print_warning "Kubernetes services accessible via Docker Compose (same app code)"
 
 # ─────────────────────────────────────────
 # STEP 8: Verify Everything
@@ -177,5 +187,4 @@ echo "   kubectl get hpa -n ecommerce"
 echo "   kubectl top pods -n ecommerce"
 echo "   docker compose logs -f"
 echo ""
-echo "🛑 To stop everything:"
-echo "   ./stop-project.sh"
+echo "🛑 To stop everything: ./stop-project.sh"

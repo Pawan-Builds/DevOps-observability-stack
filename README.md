@@ -176,12 +176,7 @@ graph TB
 
 ### 🐳 5. Docker Hub - Published Images
 
-*Screenshot coming soon - visit [hub.docker.com/u/pawanm2307](https://hub.docker.com/u/pawanm2307)*
-
-Published images:
-- `pawanm2307/product-service:v1.0.0`
-- `pawanm2307/order-service:v1.0.0`
-- `pawanm2307/user-service:v1.0.0`
+<img width="1917" height="743" alt="Screenshot 2026-02-17 213227" src="https://github.com/user-attachments/assets/68fee859-cc8e-4470-b1f2-f123f6880879" />
 
 ---
 

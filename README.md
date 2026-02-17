@@ -9,6 +9,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://postgresql.org)
 [![Prometheus](https://img.shields.io/badge/Prometheus-2.45-orange)](https://prometheus.io)
 [![Grafana](https://img.shields.io/badge/Grafana-10.0-brightgreen)](https://grafana.com)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.28-326CE5?logo=kubernetes)](https://kubernetes.io)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 **A production-grade e-commerce microservices application demonstrating DevOps best practices with a complete observability stack including metrics collection, distributed logging, and real-time monitoring.**
@@ -23,13 +24,12 @@
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
 - [Performance Metrics](#-performance-metrics)
+- [Project Screenshots](#-project-screenshots)
 - [Quick Start](#-quick-start)
+- [Kubernetes Deployment](#-kubernetes-deployment)
 - [API Documentation](#-api-documentation)
 - [Monitoring & Observability](#-monitoring--observability)
 - [Project Structure](#-project-structure)
-- [Load Testing](#-load-testing)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
 - [Author](#-author)
 
 ---
@@ -41,53 +41,37 @@ graph TB
     subgraph "Users"
         Client[Client Applications]
     end
-    
     subgraph "Microservices"
-        PS[Product Service<br/>:5000]
-        OS[Order Service<br/>:5001]
-        US[User Service<br/>:5002]
+        PS[Product Service :5000]
+        OS[Order Service :5001]
+        US[User Service :5002]
     end
-    
     subgraph "Database"
-        PG[(PostgreSQL<br/>:5432)]
+        PG[(PostgreSQL :5432)]
     end
-    
     subgraph "Monitoring Stack"
-        PROM[Prometheus<br/>:9090]
-        GRAF[Grafana<br/>:3000]
-        AM[Alertmanager<br/>:9093]
+        PROM[Prometheus :9090]
+        GRAF[Grafana :3000]
     end
-    
     subgraph "Logging Stack"
-        ES[Elasticsearch<br/>:9200]
-        KB[Kibana<br/>:5601]
+        ES[Elasticsearch :9200]
+        KB[Kibana :5601]
     end
-    
     Client --> PS
     Client --> OS
     Client --> US
-    
     PS --> PG
     OS --> PG
     US --> PG
-    
     PS -.-> PROM
     OS -.-> PROM
     US -.-> PROM
-    
     PROM --> GRAF
-    PROM --> AM
-    
     PS -.-> ES
     OS -.-> ES
     US -.-> ES
-    
     ES --> KB
 ```
-
-<div align="center">
-<p><i>Complete System Architecture with Observability Stack</i></p>
-</div>
 
 ---
 
@@ -99,29 +83,23 @@ graph TB
 - ✅ Service discovery ready for Kubernetes deployment
 
 ### 📊 **Real-time Monitoring**
-- ✅ Request rates, response times (p50, p95, p99)
-- ✅ Error rates (4xx, 5xx) and service health
+- ✅ Request rates, response times, error rates per endpoint
 - ✅ CPU/Memory usage per container
 - ✅ Custom Grafana dashboards with 15+ metrics
+- ✅ Prometheus scraping all 3 services every 15 seconds
+
+### ☸️ **Kubernetes Deployment**
+- ✅ Horizontal Pod Autoscaling (HPA) - scales 2 to 6 replicas
+- ✅ Rolling updates with zero downtime
+- ✅ ConfigMaps and Secrets management
+- ✅ Pod anti-affinity for high availability
+- ✅ Liveness, Readiness, and Startup probes
 
 ### 🏭 **Production-Ready Practices**
 - ✅ Health checks with graceful shutdown
 - ✅ Non-root containers for security
 - ✅ Auto-recovery with restart policies
 - ✅ Resource limits and constraints
-
-### 🔍 **Full Observability Stack**
-- ✅ **Prometheus**: Metrics collection and storage
-- ✅ **Grafana**: Beautiful visualizations and dashboards
-- ✅ **Elasticsearch**: Centralized log aggregation
-- ✅ **Kibana**: Log analysis and exploration
-- ✅ **Alertmanager**: Real-time alert notifications
-
-### 📦 **DevOps Excellence**
-- ✅ Single command deployment with Docker Compose
-- ✅ Pre-loaded with realistic e-commerce sample data
-- ✅ Makefile automation for common tasks
-- ✅ Scalable design for production environments
 
 ---
 
@@ -134,8 +112,9 @@ graph TB
 | **Backend** | ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python) ![Flask](https://img.shields.io/badge/Flask-2.3-000000?logo=flask) |
 | **Database** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql) |
 | **Monitoring** | ![Prometheus](https://img.shields.io/badge/Prometheus-2.45-E6522C?logo=prometheus) ![Grafana](https://img.shields.io/badge/Grafana-10.0-F46800?logo=grafana) |
-| **Logging** | ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.10-005571?logo=elasticsearch) ![Kibana](https://img.shields.io/badge/Kibana-8.10-005571?logo=kibana) |
-| **Containerization** | ![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?logo=docker) ![Docker Compose](https://img.shields.io/badge/Compose-2.20-2496ED?logo=docker) |
+| **Logging** | ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.11-005571?logo=elasticsearch) ![Kibana](https://img.shields.io/badge/Kibana-8.11-005571?logo=kibana) |
+| **Containerization** | ![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?logo=docker) ![Compose](https://img.shields.io/badge/Compose-2.20-2496ED?logo=docker) |
+| **Orchestration** | ![Kubernetes](https://img.shields.io/badge/Kubernetes-1.28-326CE5?logo=kubernetes) ![Minikube](https://img.shields.io/badge/Minikube-1.32-326CE5) |
 
 </div>
 
@@ -147,14 +126,55 @@ graph TB
 
 | Metric | Value | Condition |
 |--------|-------|-----------|
-| **Uptime** | 99.9% | During 24h load test |
+| **Uptime** | 99.9% | During load testing |
 | **Avg Response Time** | < 50ms | Normal load |
 | **Error Rate** | < 1% | 200 concurrent users |
 | **Auto-recovery** | < 30s | Container failure |
-| **Alert Detection** | < 1min | Real-time |
 | **Metrics Tracked** | 15+ | Per service |
+| **K8s Pods** | 9 running | Across 4 deployments |
+| **Auto-scaling** | 2-6 replicas | CPU/Memory based |
 
 </div>
+
+---
+
+## 📸 Project Screenshots
+
+### ☸️ 1. Kubernetes - All Pods Running + HPA Active
+
+<img width="1919" height="561" alt="Screenshot 2026-02-17 211250" src="https://github.com/user-attachments/assets/d57036f8-d345-4cc1-b857-2b64c10f4e45" />
+
+
+---
+
+### 📊 2. Grafana - Real-time Monitoring Dashboard
+
+<img width="1885" height="655" alt="Screenshot 2026-02-14 222901" src="https://github.com/user-attachments/assets/3ba7d026-dab6-4133-839c-2d36b33cbb16" />
+<img width="1859" height="454" alt="Screenshot 2026-02-14 222916" src="https://github.com/user-attachments/assets/45ceca74-0442-43fd-be52-e7b152739693" />
+
+---
+
+### 🔍 3. Prometheus - All Targets UP
+
+<img width="1886" height="957" alt="Screenshot 2026-02-14 222822" src="https://github.com/user-attachments/assets/8403b572-3966-4ecc-b771-b9b4521a73f3" />
+<img width="1889" height="931" alt="Screenshot 2026-02-14 222956" src="https://github.com/user-attachments/assets/e041de14-8def-4891-a416-4e8e6b909c8f" />
+
+---
+
+### 🔌 4. Live API Responses
+
+<img width="1919" height="338" alt="Screenshot 2026-02-17 211406" src="https://github.com/user-attachments/assets/fad1774d-38bf-4969-a7ca-43af44dd3410" />
+
+
+<!-- ============================================
+
+
+> Test APIs:
+> ```bash
+> curl http://localhost:5000/products
+> curl http://localhost:5001/orders
+> curl http://localhost:5002/users
+> ```
 
 ---
 
@@ -162,42 +182,77 @@ graph TB
 
 ### Prerequisites
 ```bash
-# Check Docker version
-docker --version  # 20.10+
+docker --version        # 20.10+
 docker compose version  # 2.0+
-
-# Minimum resources
-- 8GB RAM
-- 20GB free disk space
-- 4 CPU cores recommended
+kubectl version         # 1.28+
+minikube version        # 1.32+
 ```
 
-### Installation (60 seconds)
-
+### One Command Start
 ```bash
-# 1. Clone the repository
+# Clone the repo
 git clone https://github.com/Pawan-Builds/DevOps-observability-stack.git
 cd DevOps-observability-stack
 
-# 2. Start all services
-docker compose up -d --build
+# Start everything (Docker Compose + Kubernetes)
+./start-project.sh
 
-# 3. Wait for services to be healthy (30-60 seconds)
-docker compose ps
-
-# 4. Verify all services are running
-curl http://localhost:5000/health
-curl http://localhost:5001/health
-curl http://localhost:5002/health
+# Stop everything
+./stop-project.sh
 ```
 
-### Using Makefile (Alternative)
+### Manual Start
 ```bash
-make help        # Show available commands
-make build       # Build and start all services
-make logs        # View logs from all services
-make stop        # Stop all services
-make clean       # Stop and remove all containers
+# Docker Compose only (monitoring stack)
+docker compose up -d --build
+docker compose ps
+
+# Kubernetes only
+./k8s/deploy.sh
+kubectl get pods -n ecommerce
+```
+
+---
+
+## ☸️ Kubernetes Deployment
+
+### Architecture
+```
+Namespace: ecommerce
+├── Deployments
+│   ├── product-service  (replicas: 2 → HPA max: 6)
+│   ├── order-service    (replicas: 3 → HPA max: 6)
+│   ├── user-service     (replicas: 3 → HPA max: 6)
+│   └── postgres         (replicas: 1 → PVC: 5Gi)
+├── Services (ClusterIP)
+│   ├── product-service  :80 → :5000
+│   ├── order-service    :80 → :5001
+│   ├── user-service     :80 → :5002
+│   └── postgres         :5432
+├── HPA (Autoscaling)
+│   ├── CPU threshold:    70%
+│   └── Memory threshold: 80%
+└── ConfigMap + Secrets
+    ├── Non-sensitive config → ConfigMap
+    └── Passwords/Keys      → Secrets
+```
+
+### Deploy & Verify
+```bash
+# Full automated deployment
+./k8s/deploy.sh
+
+# Verify
+kubectl get pods -n ecommerce
+kubectl get hpa -n ecommerce
+kubectl top pods -n ecommerce
+```
+
+### Docker Hub Images
+```
+pawanm2307/product-service:v1.0.0
+pawanm2307/order-service:v1.0.0
+pawanm2307/user-service:v1.0.0
 ```
 
 ---
@@ -206,35 +261,15 @@ make clean       # Stop and remove all containers
 
 <div align="center">
 
-| Service | URL | Credentials | Purpose |
-|---------|-----|-------------|---------|
-| **Product API** | [http://localhost:5000](http://localhost:5000) | - | Product management |
-| **Order API** | [http://localhost:5001](http://localhost:5001) | - | Order management |
-| **User API** | [http://localhost:5002](http://localhost:5002) | - | User management |
-| **Prometheus** | [http://localhost:9090](http://localhost:9090) | - | Metrics collection |
-| **Grafana** | [http://localhost:3000](http://localhost:3000) | admin/admin | Dashboards |
-| **Kibana** | [http://localhost:5601](http://localhost:5601) | - | Log visualization |
-| **Elasticsearch** | [http://localhost:9200](http://localhost:9200) | - | Log storage |
-| **PostgreSQL** | `localhost:5432` | admin/password | Database |
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Product API** | http://localhost:5000/products | - |
+| **Order API** | http://localhost:5001/orders | - |
+| **User API** | http://localhost:5002/users | - |
+| **Grafana** | http://localhost:3000 | admin/admin |
+| **Prometheus** | http://localhost:9090 | - |
+| **Kibana** | http://localhost:5601 | - |
 
-</div>
-
-### Grafana Dashboard Preview
-
-<div align="center">
-<img width="1885" height="655" alt="Screenshot 2026-02-14 222901" src="https://github.com/user-attachments/assets/1ecdf490-7db2-4227-b890-3ea7764d8b9b" />
-<img width="1859" height="454" alt="Screenshot 2026-02-14 222916" src="https://github.com/user-attachments/assets/5c2d7cab-5e56-46ee-b761-f206ac98b8fb" />
-
-<p><i>Real-time metrics dashboard showing service health and performance</i></p>
-</div>
-
-### Prometheus Targets
-
-<div align="center">
-<img width="1889" height="931" alt="Screenshot 2026-02-14 222956" src="https://github.com/user-attachments/assets/7db1c23b-9e7a-4f9d-a6d9-a2af72926524" />
-<img width="1886" height="957" alt="Screenshot 2026-02-14 222822" src="https://github.com/user-attachments/assets/e58f98e9-c346-49f0-bd1f-7052ae217fab" />
-
-<p><i>Prometheus target status showing all services are UP</i></p>
 </div>
 
 ---
@@ -243,113 +278,75 @@ make clean       # Stop and remove all containers
 
 ### Product Service (Port 5000)
 
-#### Get all products
 ```bash
+# Get all products
 curl http://localhost:5000/products
-```
 
-<details>
-<summary>Response (click to expand)</summary>
-
-```json
-{
-  "count": 5,
-  "products": [
-    {
-      "id": 1,
-      "name": "Laptop",
-      "price": 999.99,
-      "stock": 50,
-      "created_at": "2026-02-14T10:59:23"
-    },
-    {
-      "id": 2,
-      "name": "Wireless Mouse",
-      "price": 29.99,
-      "stock": 200,
-      "created_at": "2026-02-14T10:59:23"
-    }
-  ]
-}
-```
-</details>
-
-#### Create a product
-```bash
+# Create product
 curl -X POST http://localhost:5000/products \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "Monitor",
-    "price": 299.99,
-    "stock": 30
-  }'
+  -d '{"name": "Monitor", "price": 299.99, "stock": 30}'
+
+# Health check
+curl http://localhost:5000/health
 ```
 
 ### Order Service (Port 5001)
 
-#### Create an order
 ```bash
+# Get all orders
+curl http://localhost:5001/orders
+
+# Create order (auto-validates stock + calculates price)
 curl -X POST http://localhost:5001/orders \
   -H "Content-Type: application/json" \
-  -d '{
-    "user_id": 1,
-    "product_id": 1,
-    "quantity": 2
-  }'
+  -d '{"user_id": 1, "product_id": 1, "quantity": 2}'
 ```
-
-**Note:** Order creation automatically:
-- ✅ Validates product availability
-- ✅ Calculates total price
-- ✅ Updates product stock
-- ✅ Creates order with "pending" status
 
 ### User Service (Port 5002)
 
-#### Get all users
 ```bash
+# Get all users
 curl http://localhost:5002/users
+
+# Create user
+curl -X POST http://localhost:5002/users \
+  -H "Content-Type: application/json" \
+  -d '{"username": "alice", "email": "alice@example.com"}'
 ```
 
 ---
 
 ## 🔍 Monitoring & Observability
 
-### Prometheus Queries
-
-Access Prometheus at [http://localhost:9090](http://localhost:9090)
+### Key Prometheus Queries
 
 ```promql
 # Request rate per service
 rate(flask_http_request_total[5m])
 
-# Error rate (5xx responses)
-rate(flask_http_request_total{status=~"5.."}[5m])
-
 # Average response time
-rate(flask_http_request_duration_seconds_sum[5m]) / 
+rate(flask_http_request_duration_seconds_sum[5m]) /
 rate(flask_http_request_duration_seconds_count[5m])
 
-# Service uptime
+# Error rate (5xx only)
+rate(flask_http_request_total{status=~"5.."}[5m])
+
+# Service uptime (1=UP, 0=DOWN)
 up{job=~".*-service"}
 
-# Memory usage
-process_resident_memory_bytes
-
-# CPU usage
-rate(process_cpu_seconds_total[5m])
+# Memory usage in MB
+process_resident_memory_bytes / 1024 / 1024
 ```
 
-### Pre-configured Alerts
-
-Alertmanager ([http://localhost:9093](http://localhost:9093)) comes with:
+### Alert Rules
 
 | Alert | Condition | Severity |
 |-------|-----------|----------|
 | Service Down | `up == 0` for >1m | Critical |
 | High Error Rate | Error rate >5% | Warning |
-| High Latency | Response time >500ms | Warning |
-| High Memory | Memory >80% of limit | Info |
+| High Latency | Response >500ms | Warning |
+| High Memory | Memory >80% limit | Info |
 
 ---
 
@@ -360,220 +357,74 @@ devops-observability-stack/
 ├── 📄 README.md
 ├── 📄 docker-compose.yml
 ├── 📄 Makefile
-├── 📄 .gitignore
-│
+├── 📄 start-project.sh
+├── 📄 stop-project.sh
 ├── 📁 services/
 │   ├── 📁 product-service/
-│   │   ├── 📄 app.py
-│   │   ├── 📄 Dockerfile
-│   │   └── 📄 requirements.txt
-│   │
 │   ├── 📁 order-service/
-│   │   ├── 📄 app.py
-│   │   ├── 📄 Dockerfile
-│   │   └── 📄 requirements.txt
-│   │
 │   ├── 📁 user-service/
-│   │   ├── 📄 app.py
-│   │   ├── 📄 Dockerfile
-│   │   └── 📄 requirements.txt
-│   │
-│   └── 📁 database/
-│       └── 📄 init.sql
-│
+│   └── 📁 database/init.sql
 ├── 📁 monitoring/
 │   ├── 📁 prometheus/
-│   │   ├── 📄 prometheus.yml
-│   │   └── 📄 alert-rules.yml
-│   │
-│   ├── 📁 grafana/
-│   │   └── 📁 provisioning/
-│   │       ├── 📁 dashboards/
-│   │       │   ├── 📄 dashboard.yml
-│   │       │   └── 📄 microservices-dashboard.json
-│   │       └── 📁 datasources/
-│   │           └── 📄 datasource.yml
-│   │
-│   └── 📁 alertmanager/
-│       └── 📄 alertmanager.yml
-│
-└── 📁 scripts/
-    ├── 📄 load-test.sh
-    └── 📄 cleanup.sh
+│   └── 📁 grafana/
+├── 📁 k8s/
+│   ├── 📄 deploy.sh
+│   ├── 📁 namespace/
+│   ├── 📁 configmap/
+│   ├── 📁 secrets/
+│   ├── 📁 deployments/
+│   └── 📁 hpa/
+├── 📁 scripts/
+└── 📁 screenshots/
+    ├── k8s-pods.png           ← kubectl get pods + hpa
+    ├── grafana-dashboard.png  ← Grafana monitoring
+    ├── prometheus-targets.png ← All targets UP
+    ├── api-responses.png      ← curl API outputs
+    └── dockerhub.png          ← Docker Hub images
 ```
-
----
-
-## 🧪 Load Testing
-
-### Simulate 200 Concurrent Users
-
-```bash
-# Make script executable
-chmod +x scripts/load-test.sh
-
-# Run load test
-./scripts/load-test.sh
-```
-
-<details>
-<summary><b>load-test.sh</b> (click to expand)</summary>
-
-```bash
-#!/bin/bash
-echo "🚀 Starting load test with 200 concurrent users..."
-
-for i in {1..200}; do
-  (
-    # Product service calls
-    curl -s http://localhost:5000/products > /dev/null &
-    curl -s http://localhost:5000/products/1 > /dev/null &
-    
-    # Order service calls
-    curl -s http://localhost:5001/orders > /dev/null &
-    
-    # User service calls
-    curl -s http://localhost:5002/users > /dev/null &
-    curl -s http://localhost:5002/users/1 > /dev/null &
-  )
-  
-  # Progress indicator
-  if (( i % 20 == 0 )); then
-    echo "🔄 $i requests completed..."
-  fi
-  
-  sleep 0.1
-done
-
-wait
-echo "✅ Load test complete! Check Grafana for metrics."
-```
-</details>
-
-### Expected Results
-- ✅ All requests return 200 OK
-- ✅ Average response time < 100ms
-- ✅ No 5xx errors
-- ✅ Metrics visible in Grafana in real-time
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Common Issues & Solutions
-
 <details>
-<summary><b>Services not starting?</b></summary>
+<summary><b>Pods showing ImagePullBackOff?</b></summary>
 
 ```bash
-# Check logs
-docker compose logs
+minikube image load pawanm2307/product-service:v1.0.0
+minikube image load pawanm2307/order-service:v1.0.0
+minikube image load pawanm2307/user-service:v1.0.0
 
-# Check if ports are in use
-sudo lsof -i :5000
-sudo lsof -i :5001
-sudo lsof -i :5002
-
-# Rebuild from scratch
-docker compose down -v
-docker compose up -d --build --force-recreate
+kubectl patch deployment product-service -n ecommerce \
+  -p '{"spec":{"template":{"spec":{"containers":[{"name":"product-service","imagePullPolicy":"Never"}]}}}}'
 ```
 </details>
 
 <details>
-<summary><b>Database connection issues?</b></summary>
+<summary><b>Port already in use?</b></summary>
 
 ```bash
-# Check database health
-docker compose ps postgres
-
-# View database logs
-docker compose logs postgres
-
-# Access database directly
-docker compose exec postgres psql -U admin -d ecommerce -c "\dt"
+pkill -f "kubectl port-forward"
+# Docker Compose already serves 5000-5002, no port-forward needed
 ```
 </details>
 
 <details>
-<summary><b>No metrics in Grafana?</b></summary>
+<summary><b>HPA showing unknown metrics?</b></summary>
 
 ```bash
-# Check Prometheus targets
-open http://localhost:9090/targets
-
-# Verify metrics endpoints
-curl http://localhost:5000/metrics
-curl http://localhost:5001/metrics
-curl http://localhost:5002/metrics
-
-# Restart Prometheus
-docker compose restart prometheus
+minikube addons enable metrics-server
+sleep 60
+kubectl get hpa -n ecommerce
 ```
 </details>
-
----
-
-## 📊 Sample Data
-
-### Products
-| ID | Name | Price | Stock |
-|----|------|-------|-------|
-| 1 | Laptop | $999.99 | 50 |
-| 2 | Wireless Mouse | $29.99 | 200 |
-| 3 | Mechanical Keyboard | $79.99 | 150 |
-| 4 | USB-C Hub | $49.99 | 100 |
-| 5 | Webcam HD | $89.99 | 75 |
-
-### Users
-| ID | Username | Email |
-|----|----------|-------|
-| 1 | john_doe | john@example.com |
-| 2 | jane_smith | jane@example.com |
-| 3 | bob_wilson | bob@example.com |
-
-### Orders
-| ID | User | Product | Quantity | Status |
-|----|------|---------|----------|--------|
-| 1 | john_doe | Laptop | 1 | completed |
-| 2 | jane_smith | Wireless Mouse | 2 | pending |
-| 3 | bob_wilson | Mechanical Keyboard | 1 | shipped |
-
----
-
-## 🎓 Learning Outcomes
-
-This project demonstrates:
-
-| Concept | Implementation |
-|---------|---------------|
-| **Microservices Architecture** | 3 independent services with database relationships |
-| **Containerization** | Docker best practices, multi-stage builds |
-| **Orchestration** | Docker Compose for local development |
-| **Observability** | Complete monitoring and logging stack |
-| **Database Design** | Relational data modeling with foreign keys |
-| **API Design** | RESTful principles and error handling |
-| **DevOps Practices** | Automation, health checks, graceful shutdown |
-| **Production Readiness** | Non-root containers, security, resource limits |
-
----
-
-## 🤝 Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ---
 
 ## 👨‍💻 Author
 
 <div align="center">
-  
+
 **Pawan Singh M**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Pawan--Builds-181717?logo=github)](https://github.com/Pawan-Builds)
@@ -584,40 +435,11 @@ Contributions are what make the open source community such an amazing place to l
 
 ---
 
-## 📝 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-## 🙏 Acknowledgments
-
-- Inspired by production microservices architectures at tech giants
-- Built with industry-standard DevOps tools
-- Demonstrates real-world observability practices
-
----
-
-## 📞 Support
-
-If you find this project helpful:
-
-<div align="center">
-
-⭐ **Star this repository** to show your support  
-🐛 **Report issues** to help improve the project  
-🔀 **Submit pull requests** to contribute  
-📣 **Share with others** learning DevOps
-
-</div>
-
----
-
 ## 🔗 Related Projects
 
-- [devops-cicd-microservice](https://github.com/Pawan-Builds/devops-cicd-microservice) - CI/CD pipeline for microservices
-- [terraform-aws-devops-infra](https://github.com/Pawan-Builds/terraform-aws-devops-infra) - AWS infrastructure as code
-- [task-manager](https://github.com/Pawan-Builds/task-manager) - Full-stack task management app
+- [devops-cicd-microservice](https://github.com/Pawan-Builds/devops-cicd-microservice)
+- [terraform-aws-devops-infra](https://github.com/Pawan-Builds/terraform-aws-devops-infra)
+- [task-manager](https://github.com/Pawan-Builds/task-manager)
 
 ---
 

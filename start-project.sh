@@ -35,7 +35,7 @@ fi
 # ─────────────────────────────────────────
 echo ""
 echo "📋 Step 2: Starting Docker Compose Stack..."
-cd ~/devops-observability-stack
+cd ~/DevOps-observability-stack
 docker compose up -d
 print_status "Docker Compose stack started!"
 

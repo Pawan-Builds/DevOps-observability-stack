@@ -3,44 +3,98 @@ kind: Deployment
 metadata:
   name: product-service
   namespace: ecommerce
+  labels:
+    app: product-service
+    version: v1.0.0
+    component: backend
+  annotations:
+    description: "Product catalog microservice"
+    deployment.kubernetes.io/revision: "1"
 spec:
   replicas: 3
+
+  # ✅ FIX: Rolling update strategy (zero downtime deployments)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1   # At most 1 pod down during update
+      maxSurge: 1         # At most 1 extra pod during update
+
   selector:
     matchLabels:
       app: product-service
+
   template:
     metadata:
       labels:
         app: product-service
+        version: v1.0.0
+      # ✅ KEPT: Prometheus scraping annotation
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "5000"
         prometheus.io/path: "/metrics"
+
     spec:
+      # ✅ FIX: Pod security context (non-root user)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
       containers:
       - name: product-service
-        image: your-registry/product-service:latest
+        # ✅ FIX: Use versioned tag, not :latest
+        # Replace with your actual Docker Hub username
+        image: pawanm2307/product-service:v1.0.0
+        imagePullPolicy: IfNotPresent
+
         ports:
-        - containerPort: 5000
+        - name: http          # ✅ FIX: Named port
+          containerPort: 5000
+          protocol: TCP
+
+        # ✅ FIX: Use ConfigMap for non-sensitive config
         env:
         - name: DB_HOST
-          value: postgres
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_PORT
         - name: DB_NAME
-          value: ecommerce
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_NAME
+        - name: FLASK_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: FLASK_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+
+        # ✅ KEPT: Secret-based credentials
         - name: DB_USER
           valueFrom:
             secretKeyRef:
-              name: db-credentials
-              key: username
+              name: app-secrets
+              key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: db-credentials
-              key: password
-        - name: JAEGER_AGENT_HOST
-          value: jaeger-agent
-        - name: JAEGER_AGENT_PORT
-          value: "6831"
+              name: app-secrets
+              key: DB_PASSWORD
+
+        # ✅ KEPT: Resource management
         resources:
           requests:
             memory: "256Mi"
@@ -48,28 +102,69 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+
+        # ✅ KEPT: Liveness probe (restart if unhealthy)
         livenessProbe:
           httpGet:
             path: /health
-            port: 5000
+            port: http           # Use named port
           initialDelaySeconds: 30
           periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # ✅ KEPT: Readiness probe (traffic only when ready)
         readinessProbe:
           httpGet:
             path: /health
-            port: 5000
-          initialDelaySeconds: 5
+            port: http           # Use named port
+          initialDelaySeconds: 15
           periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+        # ✅ ADDED: Startup probe (for slow-starting containers)
+        startupProbe:
+          httpGet:
+            path: /health
+            port: http
+          failureThreshold: 30
+          periodSeconds: 10
+
+      # Graceful shutdown
+      terminationGracePeriodSeconds: 30
+
+      # Spread pods across nodes for high availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - product-service
+              topologyKey: kubernetes.io/hostname
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: product-service
   namespace: ecommerce
+  labels:
+    app: product-service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
 spec:
   selector:
     app: product-service
   ports:
-  - port: 80
-    targetPort: 5000
+  - name: http          # ✅ FIX: Named port
+    port: 80
+    targetPort: http    # References named port in deployment
+    protocol: TCP
   type: ClusterIP
